@@ -72,8 +72,7 @@ const App = ({ signOut }) => {
   return (
     <View className="App">
       <Heading level={1}>My Notes App</Heading>
-      {/* link to index.html */}
-      <a href="index.html">Home</a>
+      {/* link to project_index.html */}
       <View as="form" margin="3rem 0" onSubmit={createNote}>
         <Flex direction="row" justifyContent="center">
           <TextField

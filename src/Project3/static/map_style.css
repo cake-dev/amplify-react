@@ -1,0 +1,29 @@
+.svg-content {
+    background-color: #ecf3f4;
+}
+
+.continent {
+    fill: #fafafa;
+    stroke: #434141;
+    stroke-width: 0.2;
+    opacity: 0.6;
+    stroke-opacity: 0.3;
+}
+
+.circles {
+    fill: #111104;
+}
+
+.labels {
+    font-family: Georgia;
+    font-size: 15%;
+    fill: #555555;
+}
+
+#ES {
+    fill: #fafafa;
+    opacity: 0.8;
+    stroke: #434141;
+    stroke-width: 0.2;
+    stroke-opacity: 0.3;
+}

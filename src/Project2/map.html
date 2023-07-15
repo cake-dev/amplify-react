@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mapping Assignment</title>
+    <style>
+        text {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        .message {
+            font-size: 2em;
+            text-align: center;
+        }
+
+        path {
+            fill: none;
+            stroke-width: 1px;
+            stroke: #222;
+        }
+
+        .grat {
+            stroke: #222;
+            stroke-dasharray: 4px;
+            stroke-width: 1px;
+            opacity: .5
+        }
+
+        #map_container {
+            text-align: center;
+        }
+
+        #master {
+            text-align: center;
+        }
+
+        #legendTable {
+            text-align: center;
+        }
+
+        .map_table {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: large;
+            text-align: left;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 1.2em;
+            font-family: sans-serif;
+            min-width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .map_titles {
+            font-family: 'Courier New', Courier, monospace;
+            text-align: left;
+            font-weight: bold;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-family: sans-serif;
+            min-width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            background-color: #f16609ad;
+            opacity: 1;
+            border: #222;
+            border-radius: 5px;
+        }
+
+        .map_titles h3 {
+            font-family: 'Courier New', Courier, monospace;
+            text-align: left;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-family: sans-serif;
+            min-width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            background-color: #f16609ad;
+            opacity: 1;
+            border: #222;
+            border-radius: 5px;
+        }
+
+        .map_titles p {
+            font-size: xx-large;
+        }
+
+        .map_table thead tr {
+            background-color: #f16609;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .map_table th,
+        .map_table th,
+        td {
+            padding: 12px 15px;
+        }
+
+        .map_table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .map_table tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        .map_table tbody tr:nth-of-type(odd) {
+            background-color: #ececec;
+        }
+
+        .map_table tbody tr:last-of-type {
+            border-bottom: 2px solid #f16609;
+        }
+
+        .layout {
+            width: 1366px;
+            height: 768px;
+
+            display: grid;
+            grid:
+                "header header header" auto "leftSide body rightSide" 1fr "footer footer footer" auto / auto 1fr auto;
+            gap: 8px;
+        }
+
+        .header {
+            grid-area: header;
+        }
+
+        .leftSide {
+            grid-area: leftSide;
+        }
+
+        .body {
+            grid-area: body;
+        }
+
+        .rightSide {
+            grid-area: rightSide;
+        }
+
+        .footer {
+            grid-area: footer;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
+    <script src='https://unpkg.com/simple-statistics@7.7.5/dist/simple-statistics.min.js'>
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/w3css.css" />
+
+</head>
+
+<body>
+
+    <div id="master">
+        <section class="layout" style="margin-left: 5%;">
+            <div class="header">
+                <div class="message">Have Wildfires in the West been Growing Larger?</div>
+                <hr>
+            </div>
+            <div class="leftSide">
+                <div id="info_container">
+                    <!-- <svg id="my_legend" height=300 width=300></svg> -->
+                </div>
+            </div>
+            <div class="body">
+                <div id="map_container"><svg id="viz" width="800" height="800"></svg></div>
+            </div>
+            <div class="rightSide">
+                <div id="legend_container">
+                    <div class="w3-dropdown-hover">
+                        <button class="btn btn-secondary" onclick="dropFunction()">Select Year</button>
+                        <div class="w3-dropdown-content w3-bar-block w3-card w3-light-grey" id="myDIV">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1985"
+                                                onclick="addFires(this.value)">1985</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1986"
+                                                onclick="addFires(this.value)">1986</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1987"
+                                                onclick="addFires(this.value)">1987</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1988"
+                                                onclick="addFires(this.value)">1988</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1989"
+                                                onclick="addFires(this.value)">1989</button></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1990"
+                                                onclick="addFires(this.value)">1990</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1991"
+                                                onclick="addFires(this.value)">1991</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1992"
+                                                onclick="addFires(this.value)">1992</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1993"
+                                                onclick="addFires(this.value)">1993</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1994"
+                                                onclick="addFires(this.value)">1994</button></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1995"
+                                                onclick="addFires(this.value)">1995</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1996"
+                                                onclick="addFires(this.value)">1996</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1997"
+                                                onclick="addFires(this.value)">1997</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1998"
+                                                onclick="addFires(this.value)">1998</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="1999"
+                                                onclick="addFires(this.value)">1999</button></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2000"
+                                                onclick="addFires(this.value)">2000</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2001"
+                                                onclick="addFires(this.value)">2001</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2002"
+                                                onclick="addFires(this.value)">2002</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2003"
+                                                onclick="addFires(this.value)">2003</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2004"
+                                                onclick="addFires(this.value)">2004</button></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2005"
+                                                onclick="addFires(this.value)">2005</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2006"
+                                                onclick="addFires(this.value)">2006</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2007"
+                                                onclick="addFires(this.value)">2007</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2008"
+                                                onclick="addFires(this.value)">2008</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2009"
+                                                onclick="addFires(this.value)">2009</button></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2010"
+                                                onclick="addFires(this.value)">2010</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2011"
+                                                onclick="addFires(this.value)">2011</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2012"
+                                                onclick="addFires(this.value)">2012</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2013"
+                                                onclick="addFires(this.value)">2013</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2014"
+                                                onclick="addFires(this.value)">2014</button></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2015"
+                                                onclick="addFires(this.value)">2015</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2016"
+                                                onclick="addFires(this.value)">2016</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2017"
+                                                onclick="addFires(this.value)">2017</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2018"
+                                                onclick="addFires(this.value)">2018</button></p>
+                                    </td>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2019"
+                                                onclick="addFires(this.value)">2019</button></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p><button class="w3-button w3-border w3-hover-deep-orange" value="2020"
+                                                onclick="addFires(this.value)">2020</button></p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" style="margin-top: 30%;" onclick="changeSize()">
+                        Change Size
+                    </button>
+                    <div class="modal_info" style="margin-top: 50%;">
+                        <button onclick="document.getElementById('id01').style.display='block'"
+                            class="w3-button w3-black">Show Info</button>
+
+                        <div id="id01" class="w3-modal">
+                            <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+                                <header class="w3-container w3-orange">
+                                    <span onclick=" document.getElementById('id01').style.display='none'"
+                                        class=" w3-button w3-clear w3-xlarge w3-display-topright">&times;</span>
+                                    <h2>Fire Size Visualization</h2>
+                                </header>
+
+                                <div class="w3-bar w3-border-bottom">
+                                    <button class="tablink w3-bar-item w3-button"
+                                        onclick="openCity(event, 'London')">Hypothesis</button>
+                                    <button class="tablink w3-bar-item w3-button"
+                                        onclick="openCity(event, 'Paris')">Data</button>
+                                    <button class="tablink w3-bar-item w3-button"
+                                        onclick="openCity(event, 'Tokyo')">Methods</button>
+                                </div>
+
+                                <div id="London" class="w3-container city">
+                                    <h1>Are Wildfires Getting Larger in the West?</h1>
+                                    <p>The world has been experiencing unprecedented climate change. Representations of
+                                        the effects of this change can be found all around us. Rising temperatures give
+                                        way to longer periods of hot and dry weather.</p>
+                                    <p>I have chosen to visualize this change in an interactive map. The map shows the
+                                        location of class G wildfires in the Western US. Class G wildfires are fires
+                                        that are 5,000 acres or over. Observing only large sized fires fit the scope of
+                                        this Hypothesis.</p>
+                                    <hr>
+                                    <p>The size and color of the map markers
+                                        are scaled by by threshold values that arrange the acres burned into 10 bins.
+                                        The bin ranges are determined by my analysis of the number of fires of each
+                                        size.</p>
+                                    </p>
+                                    <p>
+                                        The color of the state is determined by the amount of acres burned in that
+                                        state, ranked relative to the orther states that year. The color scales darker
+                                        as the amount of acres burned increases.
+                                    </p>
+                                    <p>Information can be seen on the left with the year, total amount of fires, and
+                                        total amount of acres burned. The table shows a ranked order of acres burned by
+                                        state.</p>
+                                </div>
+
+                                <div id="Paris" class="w3-container city">
+                                    <h1>Data</h1>
+                                    <p>Primary data sourced from <a href="https://www.mtbs.gov/">Monitoring Trends in
+                                            Burn Severity</a></p>
+                                    <p>Fire size class from <a
+                                            href="https://www.nwcg.gov/term/glossary/size-class-of-fire">National
+                                            Wildfire Coordinating Group</a></p>
+                                </div>
+
+                                <div id="Tokyo" class="w3-container city">
+                                    <h1>Methods</h1>
+                                    <p>Visualization created with D3 and vanilla JS</p><br>
+                                    <p>Data prep done in python (Jupyter Notebook)</p><br>
+                                </div>
+
+                                <div class="w3-container w3-light-grey w3-padding">
+                                    <button class="w3-button w3-right w3-white w3-border"
+                                        onclick="document.getElementById('id01').style.display='none'">Close</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div class="footer">
+        <h3 style="margin-top: 10%;">Acres Burned Per Year by Class G Fires</h3>
+    </div>
+    </section>
+    </div>
+    <script src="JS/map_maker.js"></script>
+    <script src="JS/functions.js" charset="utf-8"></script>
+</body>
+
+
+
+</html>

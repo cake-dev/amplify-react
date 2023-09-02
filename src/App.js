@@ -75,6 +75,7 @@ const App = ({ signOut }) => {
       <form action="/testpage.html">
         <button type="submit">About</button>
       </form>
+      <a href="/testpage.html">About 2</a>
       <View as="form" margin="3rem 0" onSubmit={createNote}>
         <Flex direction="row" justifyContent="center">
           <TextField
@@ -135,4 +136,4 @@ const App = ({ signOut }) => {
   );
 };
 
-export default withAuthenticator(App);
+export default App;

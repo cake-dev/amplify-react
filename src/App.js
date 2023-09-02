@@ -72,7 +72,7 @@ const App = ({ signOut }) => {
   return (
     <View className="App">
       <Heading level={1}>My Notes App</Heading>
-      <form action="/testpage.html">
+      <form action="/jake-personal-page/index.html">
         <button type="submit">About</button>
       </form>
       <a href="/testpage.html">About 2</a>
